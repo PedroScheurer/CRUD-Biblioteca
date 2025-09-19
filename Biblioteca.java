@@ -25,6 +25,11 @@ public class Biblioteca {
         Livro livro;
         try {
             livro = pesquisarLivro(indice);
+            if (validarTituloDuplicado(titulo) && 
+            validarAutorDuplicado(autor) &&
+            validarAnoDuplicado(anoPublicacao)) {
+                throw new Exception("Livro já cadastrado");
+            }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -50,7 +55,7 @@ public class Biblioteca {
             resultadoLivroPesquisado = pesquisarLivro(indice);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
-        } 
+        }
 
         acervo.remove(resultadoLivroPesquisado);
         return resultadoLivroPesquisado;
@@ -112,16 +117,16 @@ public class Biblioteca {
         return acervo;
     }
 
-    public List<Livro> pesquisarAntigos() throws Exception {
+    public List<Livro> pesquisarAntigos() {
         List<Livro> livrosEncontrados = new ArrayList<>();
         Livro maisAntigo = acervo.get(0);
-        for (int i = 1; i < acervo.size(); i++) {
+        for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() < maisAntigo.getAnoPublicacao()) {
                 maisAntigo = acervo.get(i);
                 livrosEncontrados.add(maisAntigo);
             }
         }
-        for (int i = 1; i < acervo.size(); i++) {
+        for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() == maisAntigo.getAnoPublicacao() &&
                     acervo.get(i) != maisAntigo) {
                 livrosEncontrados.add(acervo.get(i));
@@ -130,16 +135,16 @@ public class Biblioteca {
         return livrosEncontrados;
     }
 
-    public List<Livro> pesquisarAtuais() throws Exception {
+    public List<Livro> pesquisarAtuais() {
         List<Livro> livrosEncontrados = new ArrayList<>();
         Livro maisNovo = acervo.get(0);
-        for (int i = 1; i < acervo.size(); i++) {
+        for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() > maisNovo.getAnoPublicacao()) {
                 maisNovo = acervo.get(i);
                 livrosEncontrados.add(maisNovo);
             }
         }
-        for (int i = 1; i < acervo.size(); i++) {
+        for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() == maisNovo.getAnoPublicacao() &&
                     acervo.get(i) != maisNovo) {
                 livrosEncontrados.add(acervo.get(i));
@@ -172,17 +177,46 @@ public class Biblioteca {
         if (livro.getNumeroPaginas() <= 0) {
             throw new Exception("Número de páginas inválido");
         }
-        if (validarDuplicidade(livro)) {
+        if (validarTituloDuplicado(livro.getTitulo()) &&
+                validarAutorDuplicado(livro.getAutor()) &&
+                validarAnoDuplicado(livro.getAnoPublicacao())) {
             throw new Exception("Livro já cadastrado");
         }
         return true;
     }
 
-    private boolean validarDuplicidade(Livro livro) {
-        for (Livro l : acervo) {
-            if (livro.getTitulo().equalsIgnoreCase(l.getTitulo()) &&
-                    livro.getAutor().equalsIgnoreCase(l.getAutor()) &&
-                    livro.getAnoPublicacao() == l.getAnoPublicacao()) {
+    // private boolean validarDuplicidade(Livro livro) {
+    // for (Livro l : acervo) {
+    // if (livro.getTitulo().equalsIgnoreCase(l.getTitulo()) &&
+    // livro.getAutor().equalsIgnoreCase(l.getAutor()) &&
+    // livro.getAnoPublicacao() == l.getAnoPublicacao()) {
+    // return true;
+    // }
+    // }
+    // return false;
+    // }
+
+    private boolean validarTituloDuplicado(String titulo) {
+        for (Livro livro : acervo) {
+            if (titulo.equalsIgnoreCase(livro.getTitulo())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean validarAutorDuplicado(String autor) {
+        for (Livro livro : acervo) {
+            if (autor.equalsIgnoreCase(livro.getAutor())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean validarAnoDuplicado(int ano) {
+        for (Livro livro : acervo) {
+            if (ano == livro.getAnoPublicacao()) {
                 return true;
             }
         }

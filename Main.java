@@ -71,15 +71,42 @@ public class Main {
 
     private static void cadastrarLivro() {
         try {
+            Livro novoLivro = null;
+            String menu = """
+                    === Cadastro de Livros ===
+                    1 - Fisico
+                    2 - Digital
+                    """;
+            System.out.println(menu);
+            int opcao = Input.scanInt("Digite a opcao: ", scan);
+            if(opcao < 1 || opcao > 2){
+                throw new Exception("Opção invalida");
+            }
             String titulo = Input.scanString("Digite o titulo: ", scan);
             String autor = Input.scanString("Digite o autor: ", scan);
-            int anoPublicacao = Input.scanInt("Digite o ano de publicação: ", scan);
-            int numeroPaginas = Input.scanInt("Digite o número de páginas: ", scan);
-
-            Livro novoLivro = new Livro(titulo, autor, anoPublicacao, numeroPaginas);
+            int anoPublicacao = Input.scanInt("Digite o ano de publicacao: ", scan);
+            int numeroPaginas = Input.scanInt("Digite o numero de páginas: ", scan);
+            switch (opcao) {
+                case 1:
+                    int numeroExemplares = Input.scanInt("Digite o numero de exemplares: ", scan);
+                    String dimensoes = Input.scanString("Digite as dimensoes (00x00): ", scan);
+                    novoLivro = new LivroFisico(titulo, autor, anoPublicacao, numeroPaginas, numeroExemplares,
+                            dimensoes);
+                    break;
+                case 2:
+                    String formatoArquivo = Input.scanString("Digite o formato do arquivo: ", scan);
+                    double tamanhoArquivo = Input.scanInt("Digite o tamanho do arquivo (KB): ", scan);
+                    novoLivro = new LivroDigital(titulo, autor, anoPublicacao, numeroPaginas, formatoArquivo,
+                            tamanhoArquivo);
+                    break;
+                default:
+                    System.out.println("Opção inválida");
+                    break;
+            }
 
             Livro livroAdicionado = biblioteca.adicionarLivro(novoLivro);
             System.out.println("\nLivro adicionado com sucesso: " + livroAdicionado + "\n");
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -143,7 +170,7 @@ public class Main {
                     4 - Mais Antigo e Mais Novo
                     """;
             System.out.println(menu);
-            int opcao = Input.scanInt("Digite a opção:", scan);
+            int opcao = Input.scanInt("Digite a opcao: ", scan);
 
             switch (opcao) {
                 case 1:

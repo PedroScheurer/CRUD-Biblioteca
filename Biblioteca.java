@@ -4,6 +4,8 @@ import java.util.List;
 
 // Classe Biblioteca: Service(Negócio)
 public class Biblioteca {
+    private static final int ANO_MINIMO_PUBLICACAO = 1900;
+
     private List<Livro> acervo;
 
     public Biblioteca() {
@@ -40,7 +42,7 @@ public class Biblioteca {
         if (!autor.trim().isBlank() && !autor.trim().equals("0")) {
             livro.setAutor(autor);
         }
-        if (anoPublicacao > 0) {
+        if (anoPublicacao >= ANO_MINIMO_PUBLICACAO) {
             livro.setAnoPublicacao(anoPublicacao);
         }
         if (numeroPaginas > 0) {
@@ -70,6 +72,9 @@ public class Biblioteca {
     }
 
     public List<Livro> pesquisarLivro(int anoInicial, int anoFinal) throws Exception {
+        if(anoInicial > anoFinal){
+            throw new Exception("Data inicial não pode ser menor que data final");
+        }
         List<Livro> livrosEncontrados = new ArrayList<>();
         for (Livro livro : acervo) {
             if (livro.getAnoPublicacao() >= anoInicial && livro.getAnoPublicacao() <= anoFinal) {
@@ -170,7 +175,7 @@ public class Biblioteca {
             throw new Exception("Autor não poder ser em branco");
         }
         int anoAtual = LocalDate.now().getYear();
-        if (livro.getAnoPublicacao() < 1900 || livro.getAnoPublicacao() > anoAtual) {
+        if (livro.getAnoPublicacao() < ANO_MINIMO_PUBLICACAO || livro.getAnoPublicacao() > anoAtual) {
             throw new Exception("Ano de publicação inválido");
         }
 

@@ -38,4 +38,16 @@ public final class LivroFisico extends Livro {
     public String getTipoLivro() {
         return "Livro Fisico";
     }
+
+    public void atualizar(String titulo, String autor, int anoPublicacao, int numeroPaginas,
+            int anoMinimo, int numeroExemplares, String dimensoes) {
+        super.atualizar(titulo, autor, anoPublicacao, numeroPaginas, anoMinimo);
+
+        if (numeroExemplares > 0) {
+            this.setNumeroExemplares(numeroExemplares);
+        }
+        if (!dimensoes.trim().isBlank() && !dimensoes.trim().equals("0")) {
+            this.setDimensoes(dimensoes);
+        }
+    }
 }

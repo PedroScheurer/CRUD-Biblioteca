@@ -40,4 +40,16 @@ public final class LivroDigital extends Livro {
     public String getTipoLivro() {
         return "Livro Digital";
     }
+
+    public void atualizar(String titulo, String autor, int anoPublicacao, int numeroPaginas,
+            int anoMinimo, String formatoArquivo, double tamanhoArquivo) {
+        super.atualizar(titulo, autor, anoPublicacao, numeroPaginas, anoMinimo);
+
+        if (!formatoArquivo.trim().isBlank() && !formatoArquivo.trim().equals("0")) {
+            this.setFormatoArquivo(formatoArquivo);
+        }
+        if (tamanhoArquivo > 0) {
+            this.setTamanhoArquivo(tamanhoArquivo);
+        }
+    }
 }

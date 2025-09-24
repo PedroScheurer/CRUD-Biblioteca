@@ -57,12 +57,27 @@ public abstract class Livro {
                 + ", Numero de Paginas: " + numeroPaginas + ", Formato: " + this.getTipoLivro();
     }
 
-    // FORÇA as classes que herdam, à sobrescrever esse metodo
+    // FORÇA as classes filhas à sobrescrever esse metodo
     public abstract String getTipoLivro();
 
     // Impede que as classes filhas sobrescrevam esse metodo
     public final int getTempoPublicacao() {
         int anoAtual = LocalDate.now().getYear();
         return anoAtual - this.anoPublicacao;
+    }
+
+    public void atualizar(String titulo, String autor, int anoPublicacao, int numeroPaginas, int anoMinimo) {
+        if (!titulo.trim().isBlank() && !titulo.trim().equals("0")) {
+            this.setTitulo(titulo);
+        }
+        if (!autor.trim().isBlank() && !autor.trim().equals("0")) {
+            this.setAutor(autor);
+        }
+        if (anoPublicacao >= anoMinimo) {
+            this.setAnoPublicacao(anoPublicacao);
+        }
+        if (numeroPaginas > 0) {
+            this.setNumeroPaginas(numeroPaginas);
+        }
     }
 }

@@ -12,6 +12,10 @@ public class Biblioteca {
         this.acervo = new ArrayList<>();
     }
 
+    public static int getAnoMinimoPublicacao() {
+        return ANO_MINIMO_PUBLICACAO;
+    }
+
     public Livro adicionarLivro(Livro livro) throws Exception {
         try {
             validarLivro(livro);
@@ -22,34 +26,76 @@ public class Biblioteca {
         }
     }
 
-    public Livro atualizarLivro(int indice, String titulo, String autor, int anoPublicacao, int numeroPaginas)
-            throws Exception {
-        Livro livro;
+    // public Livro atualizarLivro(int indice, String titulo, String autor, int anoPublicacao, int numeroPaginas,
+    //         int numeroExemplares, String dimensoes) throws Exception {
+    //     Livro livro;
+    //     try {
+    //         livro = pesquisarLivro(indice);
+    //         if (validarTituloDuplicado(titulo) &&
+    //                 validarAutorDuplicado(autor) &&
+    //                 validarAnoDuplicado(anoPublicacao)) {
+    //             throw new Exception("Livro já cadastrado");
+    //         }
+    //         validarAtualizacao(livro, indice, titulo, autor, anoPublicacao, numeroPaginas);
+
+    //         // Cast para salvar variavel com o tipo LivroFisico e atualizar dados desse tipo
+    //         if (livro instanceof LivroFisico) {
+    //             LivroFisico livroFisico = (LivroFisico) livro;
+
+    //             if (numeroExemplares > 0) {
+    //                 livroFisico.setNumeroExemplares(numeroExemplares);
+    //             }
+    //             if (!dimensoes.trim().isBlank() && !dimensoes.trim().equals("0")) {
+    //                 livroFisico.setDimensoes(dimensoes);
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         throw new Exception(e.getMessage());
+    //     }
+
+    //     return livro;
+    // }
+
+    public Livro atualizarLivro(int indice, String titulo, String autor, int anoPublicacao, int numeroPaginas,
+            int numeroExemplares, String dimensoes, String formatoArquivo, double tamanhoArquivo) throws Exception {
+        Livro livro = pesquisarLivro(indice);
         try {
-            livro = pesquisarLivro(indice);
-            if (validarTituloDuplicado(titulo) && 
-            validarAutorDuplicado(autor) &&
-            validarAnoDuplicado(anoPublicacao)) {
+            if (validarTituloDuplicado(titulo) &&
+                    validarAutorDuplicado(autor) &&
+                    validarAnoDuplicado(anoPublicacao)) {
                 throw new Exception("Livro já cadastrado");
             }
+
+            if (livro instanceof LivroFisico fisico) {
+                fisico.atualizar(titulo, autor, anoPublicacao, numeroPaginas, ANO_MINIMO_PUBLICACAO,
+                        numeroExemplares, dimensoes);
+            } else if (livro instanceof LivroDigital digital) {
+                digital.atualizar(titulo, autor, anoPublicacao, numeroPaginas, ANO_MINIMO_PUBLICACAO,
+                        formatoArquivo, tamanhoArquivo);
+            }
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
-        if (!titulo.trim().isBlank() && !titulo.trim().equals("0")) {
-            livro.setTitulo(titulo);
-        }
-        if (!autor.trim().isBlank() && !autor.trim().equals("0")) {
-            livro.setAutor(autor);
-        }
-        if (anoPublicacao >= ANO_MINIMO_PUBLICACAO) {
-            livro.setAnoPublicacao(anoPublicacao);
-        }
-        if (numeroPaginas > 0) {
-            livro.setNumeroPaginas(numeroPaginas);
-        }
         return livro;
     }
+
+    // private void validarAtualizacao(Livro livro, int indice, String titulo, String autor, int anoPublicacao,
+    //         int numeroPaginas) {
+
+    //     if (!titulo.trim().isBlank() && !titulo.trim().equals("0")) {
+    //         livro.setTitulo(titulo);
+    //     }
+    //     if (!autor.trim().isBlank() && !autor.trim().equals("0")) {
+    //         livro.setAutor(autor);
+    //     }
+    //     if (anoPublicacao >= ANO_MINIMO_PUBLICACAO) {
+    //         livro.setAnoPublicacao(anoPublicacao);
+    //     }
+    //     if (numeroPaginas > 0) {
+    //         livro.setNumeroPaginas(numeroPaginas);
+    //     }
+    // }
 
     public Livro removerLivro(int indice) throws Exception {
         Livro resultadoLivroPesquisado;
@@ -72,8 +118,8 @@ public class Biblioteca {
     }
 
     public List<Livro> pesquisarLivro(int anoInicial, int anoFinal) throws Exception {
-        if(anoInicial > anoFinal){
-            throw new Exception("Data inicial não pode ser menor que data final");
+        if (anoInicial > anoFinal) {
+            throw new Exception("Data inicial nao pode ser menor que data final");
         }
         List<Livro> livrosEncontrados = new ArrayList<>();
         for (Livro livro : acervo) {
@@ -93,10 +139,10 @@ public class Biblioteca {
         for (Livro livro : acervo) {
             if (livro.getTitulo().toUpperCase().contains(titulo.toUpperCase())) {
                 livrosEncontrados.add(livro);
-            } else {
-                throw new Exception("Nenhum livro encontrado");
             }
-
+        }
+        if (livrosEncontrados.isEmpty()) {
+            throw new Exception("Nenhum livro encontrado");
         }
         return livrosEncontrados;
     }
@@ -107,10 +153,11 @@ public class Biblioteca {
             if (livro.getTitulo().toUpperCase().contains(titulo.toUpperCase()) &&
                     livro.getAutor().toUpperCase().contains(autor.toUpperCase())) {
                 livrosEncontrados.add(livro);
-            } else {
-                throw new Exception("Nenhum livro encontrado");
             }
+        }
 
+        if (livrosEncontrados.isEmpty()) {
+            throw new Exception("Nenhum livro encontrado");
         }
         return livrosEncontrados;
     }
@@ -128,12 +175,10 @@ public class Biblioteca {
         for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() < maisAntigo.getAnoPublicacao()) {
                 maisAntigo = acervo.get(i);
-                livrosEncontrados.add(maisAntigo);
             }
         }
         for (int i = 0; i < acervo.size(); i++) {
-            if (acervo.get(i).getAnoPublicacao() == maisAntigo.getAnoPublicacao() &&
-                    acervo.get(i) != maisAntigo) {
+            if (acervo.get(i).getAnoPublicacao() == maisAntigo.getAnoPublicacao()) {
                 livrosEncontrados.add(acervo.get(i));
             }
         }
@@ -146,12 +191,10 @@ public class Biblioteca {
         for (int i = 0; i < acervo.size(); i++) {
             if (acervo.get(i).getAnoPublicacao() > maisNovo.getAnoPublicacao()) {
                 maisNovo = acervo.get(i);
-                livrosEncontrados.add(maisNovo);
             }
         }
         for (int i = 0; i < acervo.size(); i++) {
-            if (acervo.get(i).getAnoPublicacao() == maisNovo.getAnoPublicacao() &&
-                    acervo.get(i) != maisNovo) {
+            if (acervo.get(i).getAnoPublicacao() == maisNovo.getAnoPublicacao()) {
                 livrosEncontrados.add(acervo.get(i));
             }
         }
@@ -172,20 +215,20 @@ public class Biblioteca {
         }
         livro.setAutor(livro.getAutor().trim());
         if (livro.getAutor() == null || livro.getAutor().isEmpty()) {
-            throw new Exception("Autor não poder ser em branco");
+            throw new Exception("Autor nao poder ser em branco");
         }
         int anoAtual = LocalDate.now().getYear();
         if (livro.getAnoPublicacao() < ANO_MINIMO_PUBLICACAO || livro.getAnoPublicacao() > anoAtual) {
-            throw new Exception("Ano de publicação inválido");
+            throw new Exception("Ano de publicação invalido");
         }
 
         if (livro.getNumeroPaginas() <= 0) {
-            throw new Exception("Número de páginas inválido");
+            throw new Exception("Número de paginas invalido");
         }
         if (validarTituloDuplicado(livro.getTitulo()) &&
                 validarAutorDuplicado(livro.getAutor()) &&
                 validarAnoDuplicado(livro.getAnoPublicacao())) {
-            throw new Exception("Livro já cadastrado");
+            throw new Exception("Livro ja cadastrado");
         }
         return true;
     }

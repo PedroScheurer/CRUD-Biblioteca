@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         String menu = """
                 === Sistema Biblioteca ===
-                Escolha uma das opções abaixo:
+                Escolha uma das opcoes abaixo:
                 1 - Adicionar Livro
                 2 - Listar Acervo
                 3 - Remover Livro
@@ -22,7 +22,7 @@ public class Main {
         int opcao;
         do {
             System.out.println(menu);
-            opcao = Input.scanInt("Digite uma opção: ", scan);
+            opcao = Input.scanInt("Digite uma opcao: ", scan);
             try {
                 switch (opcao) {
                     case 1:
@@ -60,7 +60,7 @@ public class Main {
                         break;
 
                     default:
-                        System.out.println("Opção inválida");
+                        System.out.println("Opção invalida");
                         break;
                 }
             } catch (Exception e) {
@@ -79,13 +79,13 @@ public class Main {
                     """;
             System.out.println(menu);
             int opcao = Input.scanInt("Digite a opcao: ", scan);
-            if(opcao < 1 || opcao > 2){
-                throw new Exception("Opção invalida");
+            if (opcao < 1 || opcao > 2) {
+                throw new Exception("Opcao invalida");
             }
             String titulo = Input.scanString("Digite o titulo: ", scan);
             String autor = Input.scanString("Digite o autor: ", scan);
             int anoPublicacao = Input.scanInt("Digite o ano de publicacao: ", scan);
-            int numeroPaginas = Input.scanInt("Digite o numero de páginas: ", scan);
+            int numeroPaginas = Input.scanInt("Digite o numero de paginas: ", scan);
             switch (opcao) {
                 case 1:
                     int numeroExemplares = Input.scanInt("Digite o numero de exemplares: ", scan);
@@ -114,18 +114,34 @@ public class Main {
 
     private static void atualizarLivro() {
         try {
+            Livro livroAtualizado = null;
             listarLivros();
             if (biblioteca.contagemLivros() == 0) {
                 return;
             }
-            System.out.println("\nDigite 0 (zero) se não quiser atualizar o campo!");
+            System.out.println("\nDigite 0 (zero) se nao quiser atualizar o campo!");
+
             int indice = Input.scanInt("Indice: ", scan);
+            Livro livroEncontrado = biblioteca.pesquisarLivro(indice - 1);
+
             String titulo = Input.scanString("Titulo: ", scan);
             String autor = Input.scanString("Autor: ", scan);
-            int anoPublicacao = Input.scanInt("Ano de publicação: ", scan);
+            int anoPublicacao = Input.scanInt("Ano de publicacao: ", scan);
             int numeroPaginas = Input.scanInt("Número de páginas: ", scan);
 
-            Livro livroAtualizado = biblioteca.atualizarLivro(indice - 1, titulo, autor, anoPublicacao, numeroPaginas);
+            if (livroEncontrado instanceof LivroFisico) {
+                int numeroExemplares = Input.scanInt("Numero de exemplares: ", scan);
+                String dimensoes = Input.scanString("Dimensoes: ", scan);
+
+                livroAtualizado = biblioteca.atualizarLivro(indice - 1, titulo, autor, anoPublicacao, numeroPaginas, numeroExemplares,
+                        dimensoes, null, 0);
+            } else if (livroEncontrado instanceof LivroDigital) {
+                String formatoArquivo = Input.scanString("Formato do arquivo: ", scan);
+                double tamanhoArquivo = Input.scanInt("Tamanho do arquivo: ", scan);
+
+                livroAtualizado = biblioteca.atualizarLivro(indice - 1, titulo, autor, anoPublicacao, numeroPaginas, 0, null,
+                        formatoArquivo, tamanhoArquivo);
+            }
 
             System.out.println("Livro atualizado com sucesso: " + livroAtualizado + "\n");
         } catch (Exception e) {
